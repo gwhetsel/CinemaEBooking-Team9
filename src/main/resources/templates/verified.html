@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Verification Success</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h2 class="mt-5">Account Verified</h2>
+
+  <!-- login successful + redirect -->
+  <div class="alert alert-success">
+    <p th:text="${message}"></p>
+  </div>
+
+  <a href="/login" class="btn btn-primary">Log in</a>
+</div>
+</body>
+</html>

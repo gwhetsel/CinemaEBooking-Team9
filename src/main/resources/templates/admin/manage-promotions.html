@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Manage Promotions</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Manage Promotions</h2>
+
+  <!-- Subscribed Users Section -->
+  <h5 class="mt-4">Subscribed Users</h5>
+  <div th:if="${#lists.isEmpty(subscribedUsers)}">
+    <p>No subscribed users found.</p>
+  </div>
+  <ul th:if="${!#lists.isEmpty(subscribedUsers)}">
+    <li th:each="user : ${subscribedUsers}">
+      <span th:text="${user.firstName}">User Name</span> <span th:text="${user.lastName}">User Name</span> -
+      <span th:text="${user.email}">User Email</span>
+    </li>
+  </ul>
+
+  <!-- Existing Promotions Section -->
+  <h6 class="mt-4">Existing Promotions</h6>
+  <table class="table table-hover" th:if="${!#lists.isEmpty(promotionsList)}">
+    <thead>
+    <tr>
+      <th>Title</th>
+      <th>Message</th>
+      <th>Percentage</th>
+      <th>Code</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="promo : ${promotionsList}">
+      <td th:text="${promo.title}">Promotion Title</td>
+      <td th:text="${promo.message}">Promotion Message</td>
+      <td th:text="${promo.percentage}">Promotion Percentage</td>
+      <td th:text="${promo.code}">Promotion Code</td>
+      <td>
+        <form th:action="@{/admin/manage-promotions/delete/{id}(id=${promo.id})}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+        <form th:action="@{/admin/manage-promotions/send-email/{id}(id=${promo.id})}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-primary btn-sm">Send Email</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <p th:if="${#lists.isEmpty(promotionsList)}">No promotions available.</p>
+
+  <!-- Form to Create a New Promotion -->
+  <h3 class="mt-5">Create New Promotion</h3>
+  <form th:action="@{/admin/manage-promotions/create}" th:object="${promotion}" method="post">
+    <div class="form-group">
+      <label for="title">Promotion Title</label>
+      <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="Enter promotion title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="message">Promotion Message</label>
+      <textarea th:field="*{message}" class="form-control" id="message" rows="4" placeholder="Enter promotion message" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="percentage">Promotion Percentage</label>
+      <input type="number" th:field="*{percentage}" class="form-control" id="percentage" placeholder="Enter discount percentage" required min="0" max="100">
+    </div>
+
+    <div class="form-group">
+      <label for="code">Promotion Code</label>
+      <input type="text" th:field="*{code}" class="form-control" id="code" placeholder="Enter promotion code" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create Promotion</button>
+  </form>
+
+  <!-- Back to Admin Page Button -->
+  <div class="mt-4">
+    <a href="/admin" class="btn btn-primary">Back to Dashboard</a>
+  </div>
+</div>
+</body>
+</html>

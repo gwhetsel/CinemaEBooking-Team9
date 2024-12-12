@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${movie.title}">Movie Details</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 th:text="${movie.title}">Movie Title</h2>
+  <div class="row">
+    <div class="col-md-4">
+      <!-- Display the poster -->
+      <img th:src="${movie.posterUrl}" alt="Movie Poster" class="img-fluid">
+    </div>
+    <div class="col-md-8">
+      <!-- Display detailed movie information -->
+      <p><strong>Genre:</strong> <span th:text="${movie.genre}">Genre</span></p>
+      <p><strong>Director:</strong> <span th:text="${movie.director}">Director</span></p>
+      <p><strong>Producer:</strong> <span th:text="${movie.producer}">Producer</span></p>
+      <p><strong>Cast:</strong> <span th:text="${movie.cast}">Cast</span></p>
+      <p><strong>MPAA Rating:</strong> <span th:text="${movie.mpaaRating}">MPAA Rating</span></p>
+      <p><strong>Show Dates:</strong> <span th:text="${movie.showDates}">Show Dates</span></p>
+      <p><strong>Synopsis:</strong> <span th:text="${movie.synopsis}">Synopsis</span></p>
+    </div>
+  </div>
+  <!-- Button to go back to the movie list -->
+  <a href="/movies" class="btn btn-secondary mt-4">Back to Movies</a>
+</div>
+</body>
+</html>

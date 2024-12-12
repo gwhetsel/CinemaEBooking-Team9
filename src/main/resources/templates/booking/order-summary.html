@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Summary</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary-layout {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .movie-info {
+      flex: 1;
+      margin-right: 20px;
+      margin-bottom: 30px;
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      min-width: 300px;
+    }
+
+    .movie-info h1 {
+      margin: 0;
+    }
+
+    .seats-breakdown {
+      flex: 2;
+      margin-bottom: 30px;
+      background-color: #ffffff;
+    }
+
+    .selected-seats {
+      margin-bottom: 30px;
+    }
+
+    .seat-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .seat-list li {
+      background-color: #f4f4f4;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calculations-box {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #e9f7f6;
+      border: 2px solid #a0d4d2;
+      border-radius: 10px;
+    }
+
+    .calculations-box h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #2c7873;
+    }
+
+    .calculations {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .total-cost-box {
+      background-color: #ffefd5;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #d9534f;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .total-cost-box span {
+      font-size: 1.8rem;
+      color: #c9302c;
+    }
+
+    .delete-btn {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #c9302c;
+    }
+
+    .confirm-btn, .cancel-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .confirm-btn {
+      background-color: #4CAF50;
+    }
+
+    .confirm-btn:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    .confirm-btn:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+
+    .cancel-btn {
+      background-color: #d9534f;
+      margin-left: 10px;
+    }
+
+    .cancel-btn:hover {
+      background-color: #c9302c;
+    }
+
+    .seat-type-select {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="summary-layout">
+    <div class="movie-info">
+      <h1 id="movieTitle">Movie Title</h1>
+      <p id="movieSynopsis">Movie Synopsis</p>
+      <p id="movieShowtime">Showtime: Not Available</p>
+    </div>
+
+    <div class="seats-breakdown">
+      <h2>Selected Seats</h2>
+      <div class="selected-seats">
+        <ul id="seatList" class="seat-list"></ul>
+      </div>
+
+      <div class="calculations-box">
+        <h2>Ticket Breakdown</h2>
+        <div class="calculations" id="calculations"></div>
+      </div>
+
+      <div class="total-cost-box">
+        Total Tickets: <span id="totalTickets">0</span><br>
+        Total Cost: $<span id="totalCost">0.00</span>
+      </div>
+
+      <div>
+        <button id="confirmButton" class="confirm-btn" onclick="confirmOrder()">Continue to Checkout</button>
+        <button class="cancel-btn" onclick="redirectToHome()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const childPrice = 8.50;
+  const adultPrice = 14.99;
+  const seniorPrice = 11.99;
+
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  const movieTitle = getQueryParam('title');
+  const movieSynopsis = getQueryParam('synopsis');
+  const showtime = getQueryParam('showtime');
+  const seatInfo = getQueryParam('seats') ? getQueryParam('seats').split(',') : [];
+
+  document.getElementById('movieTitle').textContent = `Movie Title: ${movieTitle}`;
+  document.getElementById('movieSynopsis').textContent = `Synopsis: ${movieSynopsis}`;
+  document.getElementById('movieShowtime').textContent = `Showtime: ${showtime}`;
+
+  let selectedSeats = seatInfo.map(seat => {
+    const [seatCode, seatType] = seat.split('-');
+    return { code: seatCode, type: seatType };
+  });
+
+  function renderSeats() {
+    const seatList = document.getElementById('seatList');
+    seatList.innerHTML = '';
+    let totalTickets = 0;
+    let totalCost = 0;
+    const calculations = [];
+
+    selectedSeats.forEach((seat, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${seat.code} -
+        <select class="seat-type-select" onchange="updateSeatType(${index}, this.value)">
+          <option value="Adult" ${seat.type === 'Adult' ? 'selected' : ''}>Adult</option>
+          <option value="Child" ${seat.type === 'Child' ? 'selected' : ''}>Child</option>
+          <option value="Senior" ${seat.type === 'Senior' ? 'selected' : ''}>Senior</option>
+        </select>
+        <button class="delete-btn" onclick="deleteSeat(${index})">Delete</button>
+      `;
+      seatList.appendChild(li);
+
+      totalTickets++;
+      let ticketPrice = seat.type === 'Child' ? childPrice : seat.type === 'Senior' ? seniorPrice : adultPrice;
+      totalCost += ticketPrice;
+      calculations.push(`${seat.type} x $${ticketPrice.toFixed(2)}`);
+    });
+
+    document.getElementById('totalTickets').textContent = totalTickets;
+    document.getElementById('totalCost').textContent = totalCost.toFixed(2);
+
+    const calculationsDiv = document.getElementById('calculations');
+    calculationsDiv.innerHTML = calculations.join('<br>');
+
+    // disable checkout button if no selected seats
+    document.getElementById('confirmButton').disabled = selectedSeats.length === 0;
+  }
+
+  function updateSeatType(index, newType) {
+    selectedSeats[index].type = newType;
+    renderSeats();
+  }
+
+  function deleteSeat(index) {
+    selectedSeats.splice(index, 1);
+    renderSeats();
+  }
+
+  function confirmOrder() {
+    const seatInfo = selectedSeats.map(seat => `${seat.code}-${seat.type}`).join(',');
+    window.location.href = `/booking/checkout?title=${encodeURIComponent(movieTitle)}&showtime=${encodeURIComponent(showtime)}&seats=${encodeURIComponent(seatInfo)}&cost=${encodeURIComponent(document.getElementById('totalCost').textContent)}`;
+  }
+
+  function redirectToHome() {
+    window.location.href = '/home';
+  }
+
+  renderSeats();
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Movie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Edit Movie</h2>
+
+    <!-- Edit Movie Form -->
+    <form th:action="@{/movies/edit/{id}(id=${movie.id})}" th:object="${movie}" method="post">
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" class="form-control" id="genre" th:field="*{genre}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" class="form-control" id="category" th:field="*{category}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="director">Director</label>
+            <input type="text" class="form-control" id="director" th:field="*{director}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="producer">Producer</label>
+            <input type="text" class="form-control" id="producer" th:field="*{producer}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cast">Cast</label>
+            <input type="text" class="form-control" id="cast" th:field="*{cast}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="synopsis">Synopsis</label>
+            <textarea class="form-control" id="synopsis" th:field="*{synopsis}" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="trailerUrl">Trailer URL</label>
+            <input type="text" class="form-control" id="trailerUrl" th:field="*{trailerUrl}">
+        </div>
+
+        <div class="form-group">
+            <label for="trailerImageUrl">Trailer Image URL</label>
+            <input type="text" class="form-control" id="trailerImageUrl" th:field="*{trailerImageUrl}">
+        </div>
+
+        <div class="form-group">
+            <label for="mpaaRating">MPAA Rating</label>
+            <input type="text" class="form-control" id="mpaaRating" th:field="*{mpaaRating}">
+        </div>
+
+        <div class="form-group">
+            <label for="posterUrl">Poster URL</label>
+            <input type="text" class="form-control" id="posterUrl" th:field="*{posterUrl}">
+        </div>
+
+        <div class="form-group">
+            <label for="reviews">Reviews</label>
+            <textarea class="form-control" id="reviews" th:field="*{reviews}" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" th:field="*{status}">
+                <option value="currently_running">Currently Running</option>
+                <option value="coming_soon">Coming Soon</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="showDates">Show Dates</label>
+            <textarea class="form-control" id="showDates" th:field="*{showDates}" rows="2" placeholder="Enter dates as comma-separated values"></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+
+        <!-- Cancel Button: Redirect to the admin view if adminPortal true -->
+        <a th:href="@{/movies(adminPortal=true)}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

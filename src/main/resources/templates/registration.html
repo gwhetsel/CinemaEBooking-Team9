@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-5">Register</h2>
+
+    <!-- Error -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <form th:action="@{/register}" method="post" class="needs-validation" novalidate id="registrationForm">
+
+        <!-- First Name -->
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" required/>
+            <div class="invalid-feedback">
+                Please provide your first name.
+            </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" required/>
+            <div class="invalid-feedback">
+                Please provide your last name.
+            </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required/>
+            <div class="invalid-feedback">
+                Please provide a valid phone number.
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required/>
+            <div class="invalid-feedback">
+                Please provide a valid email.
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password"
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#_\\-])[A-Za-z\\d@$!%*?&#_\\-]{8,}$" required/>
+            <div class="invalid-feedback">
+                Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character (@, $, !, %, *, ?, &, #, _, -).
+            </div>
+        </div>
+
+        <!-- Promotions -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="promotions" name="promotions">
+            <label class="form-check-label" for="promotions">Sign up for promotions and special offers</label>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-methods-section mb-3">
+            <h4>Payment Information (Optional)</h4>
+            <div id="paymentMethodsContainer"></div>
+            <button type="button" class="btn btn-primary" id="addPaymentMethod">Add Payment Method</button>
+        </div>
+
+        <button type="submit" class="btn btn-success">Register</button>
+    </form>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+
+        const paymentMethodsContainer = document.getElementById('paymentMethodsContainer');
+        const addPaymentMethodButton = document.getElementById('addPaymentMethod');
+        let paymentMethodCount = 0;
+        const maxPaymentMethods = 3;
+
+        function createPaymentMethodElement(index) {
+            return `
+                <div class="payment-method mb-3">
+                    <h5>Payment Method ${index + 1}</h5>
+                    <!-- Card Type -->
+                    <div class="mb-3">
+                        <label class="form-label">Card Type</label>
+                        <select class="form-control" name="paymentMethods[${index}].cardType">
+                            <option value="">Select Card Type</option>
+                            <option value="Visa">Visa</option>
+                            <option value="MasterCard">MasterCard</option>
+                            <option value="AmEx">American Express</option>
+                        </select>
+                    </div>
+                    <!-- Card Number -->
+                    <div class="mb-3">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-control" name="paymentMethods[${index}].cardNumber" 
+                            pattern="\\d{16}" maxlength="16" oninput="this.value = this.value.replace(/\\D/g, '')" placeholder="1234567812345678" required/>
+                        <div class="invalid-feedback">Card number must be exactly 16 digits.</div>
+                    </div>
+                    <!-- Expiration Date -->
+                    <div class="mb-3">
+                        <label class="form-label">Expiration Date</label>
+                        <input type="text" class="form-control" name="paymentMethods[${index}].expirationDate"
+                               pattern="^(0[1-9]|1[0-2])\\/\\d{2}$" placeholder="MM/YY" required/>
+                        <div class="invalid-feedback">Expiration date must be in the format MM/YY.</div>
+                    </div>
+                    <!-- Billing Address -->
+                    <div class="mb-3">
+                        <label class="form-label">Billing Address</label>
+                        <input type="text" class="form-control" name="paymentMethods[${index}].billingAddress" placeholder="123 Ben St, City, State, 12345" required/>
+                    </div>
+                    <hr>
+                </div>`;
+        }
+
+        addPaymentMethodButton.addEventListener('click', () => {
+            if (paymentMethodCount < maxPaymentMethods) {
+                const paymentMethodElement = createPaymentMethodElement(paymentMethodCount);
+                paymentMethodsContainer.insertAdjacentHTML('beforeend', paymentMethodElement);
+                paymentMethodCount++;
+                if (paymentMethodCount === maxPaymentMethods) {
+                    addPaymentMethodButton.disabled = true;
+                }
+            }
+        });
+
+        const form = document.getElementById('registrationForm');
+        form.addEventListener('submit', function (event) {
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => input.value = input.value.trim());
+
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+    })();
+</script>
+</body>
+</html>

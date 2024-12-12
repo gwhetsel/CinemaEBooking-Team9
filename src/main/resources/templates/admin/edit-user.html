@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit User</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Edit User</h2>
+
+  <!-- Error Message -->
+  <div th:if="${error}" class="alert alert-danger mt-3">
+    <p th:text="${error}"></p>
+  </div>
+
+  <!-- Success Message -->
+  <div th:if="${message}" class="alert alert-success mt-3">
+    <p th:text="${message}"></p>
+  </div>
+
+  <!-- User Edit Form -->
+  <form th:action="@{/admin/users/update}" th:object="${user}" method="post" class="needs-validation" novalidate>
+    <!-- User ID (Hidden) -->
+    <input type="hidden" th:field="*{id}"/>
+
+    <!-- First Name -->
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" th:field="*{firstName}" class="form-control" id="firstName" placeholder="First Name" required>
+      <div class="invalid-feedback">Please provide a first name.</div>
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input type="text" th:field="*{lastName}" class="form-control" id="lastName" placeholder="Last Name" required>
+      <div class="invalid-feedback">Please provide a last name.</div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Email" readonly>
+    </div>
+
+    <!-- Phone Number -->
+    <div class="form-group">
+      <label for="phoneNumber">Phone Number</label>
+      <input type="text" th:field="*{phoneNumber}" class="form-control" id="phoneNumber" placeholder="Phone Number" required>
+      <div class="invalid-feedback">Please provide a valid phone number.</div>
+    </div>
+
+    <!-- Role -->
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select th:field="*{role}" class="form-control" id="role" required>
+        <option value="ROLE_ADMIN" th:selected="${user.role == 'ROLE_ADMIN'}">Admin</option>
+        <option value="USER" th:selected="${user.role == 'USER'}">User</option>
+        <option value="ROLE_SUSPENDED" th:selected="${user.role == 'ROLE_SUSPENDED'}">Suspended</option>
+      </select>
+    </div>
+
+    <!-- Enabled Status -->
+    <div class="form-group">
+      <label for="enabled">Enabled</label>
+      <select th:field="*{enabled}" class="form-control" id="enabled">
+        <option value="true" th:selected="${user.enabled}">Enabled</option>
+        <option value="false" th:selected="${!user.enabled}">Disabled</option>
+      </select>
+    </div>
+
+    <!-- Subscribed to Promotions -->
+    <div class="form-group form-check">
+      <input type="checkbox" th:field="*{promotions}" class="form-check-input" id="promotions">
+      <label for="promotions" class="form-check-label">Subscribed to Promotions</label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="/admin/manage-users" class="btn btn-secondary">Cancel</a>
+      <a href="/admin/manage-users" class="btn btn-outline-secondary">Back</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

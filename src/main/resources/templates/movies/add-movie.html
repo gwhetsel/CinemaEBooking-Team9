@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Movie</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1>Add Movie</h1>
+
+  <form th:action="@{/movies/add}" method="post">
+    <div class="form-group">
+      <label for="title">Movie Title</label>
+      <input type="text" id="title" name="title" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="genre">Genre</label>
+      <input type="text" id="genre" name="genre" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category</label>
+      <input type="text" id="category" name="category" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="cast">Cast</label>
+      <input type="text" id="cast" name="cast" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="director">Director</label>
+      <input type="text" id="director" name="director" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="producer">Producer</label>
+      <input type="text" id="producer" name="producer" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="synopsis">Synopsis</label>
+      <textarea id="synopsis" name="synopsis" class="form-control" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="trailerUrl">Trailer Video URL (YouTube)</label>
+      <input type="text" id="trailerUrl" name="trailerUrl" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="trailerImageUrl">Trailer Image URL</label>
+      <input type="url" id="trailerImageUrl" name="trailerImageUrl" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="mpaaRating">MPAA Rating</label>
+      <input type="text" id="mpaaRating" name="mpaaRating" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="posterUrl">Poster URL</label>
+      <input type="url" id="posterUrl" name="posterUrl" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="status">Status (currently_running or coming_soon)</label>
+      <input type="text" id="status" name="status" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="showDates">Show Dates</label>
+      <input type="text" id="showDates" name="showDates" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Add Movie</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Payment Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #4CAF50;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .summary {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .summary h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #444;
+    }
+
+    .summary p {
+      margin: 5px 0;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .confirmation-note {
+      font-size: 1.1rem;
+      color: #333;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Payment Confirmed!</h1>
+
+  <div class="summary">
+    <h2>Order Summary</h2>
+    <p><strong>Movie:</strong> <span th:text="${movieTitle}"></span></p>
+    <p><strong>Showtime:</strong> <span th:text="${showtime}"></span></p>
+    <p><strong>Seats:</strong> <span th:text="${seats}"></span></p>
+    <p><strong>Ticket Cost:</strong> $<span id="ticketCost" th:text="${ticketCost}"></span></p>
+    <p><strong>Online Booking Fee:</strong> $<span id="onlineFee" th:text="${onlineFee}"></span></p>
+    <p><strong>Sales Tax:</strong> $<span id="salesTax" th:text="${salesTax}"></span></p>
+    <hr>
+    <p><strong>Total Cost:</strong> $<span id="totalCost" th:text="${totalCost}"></span></p>
+
+    <!-- Hidden inputs -->
+    <input type="hidden" id="discountedTotalCost" name="discountedTotalCost" th:value="${totalCost}" />
+  </div>
+
+  <p class="confirmation-note">Thank you for your purchase! Your payment has been processed successfully. You will receive a confirmation email shortly.</p>
+
+  <div class="mt-4">
+    <a href="/home" class="btn btn-success">Go to Homepage</a>
+    <a href="/booking/history" class="btn btn-primary">View Booking History</a>
+  </div>
+</div>
+
+</body>
+</html>

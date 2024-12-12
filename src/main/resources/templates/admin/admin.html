@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Admin Dashboard</h2>
+
+  <!-- Display Admin Info -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title" th:text="'Welcome, ' + ${admin.firstName} + ' ' + ${admin.lastName} ">Admin Name</h5>
+      <p class="card-text" th:text="'Role: ' + ${admin.role}">Admin Role</p>
+    </div>
+  </div>
+
+  <!-- Admin Options -->
+  <div class="mt-5">
+    <h4>Manage Options</h4>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <a href="/admin/manage-movies">Manage Movies</a>
+      </li>
+      <li class="list-group-item">
+        <a href="/admin/manage-users">Manage Users</a>
+      </li>
+      <li class="list-group-item">
+        <a href="/admin/manage-promotions">Manage Promotions</a>
+      </li>
+      <li class="list-group-item">
+        <a href="/admin/manage-sales">Manage Sales</a>
+      </li>
+    </ul>
+  </div>
+  <!-- Back Button -->
+  <div class="mt-3">
+    <a href="/home" class="btn btn-secondary">Back to Home</a>
+  </div>
+</div>
+</body>
+</html>

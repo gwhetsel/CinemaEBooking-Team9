@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Showtime</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    h2 {
+      margin-top: 20px;
+      font-size: 1.8rem;
+      color: #444;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    select {
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%27http%3A//www.w3.org/2000/svg%27 width%3D%2710%27 height%3D%275%27 viewBox%3D%270 0 10 5%27%3E%3Cpolygon fill%3D%27%23444444%27 points%3D%270,0 10,0 5,5%27/%3E%3C/svg%3E');
+      background-position: right 10px center;
+      background-repeat: no-repeat;
+      background-size: 10px 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Movie Information -->
+  <h1 th:text="${movie.title}">Movie Title</h1>
+  <p th:text="${movie.synopsis}">Movie Synopsis</p>
+
+  <!-- Showtime Selection -->
+  <h2>Select Showtime:</h2>
+  <form th:action="@{/booking/{id}/seats(id=${movie.id})}" method="get">
+    <select name="showtime">
+      <option th:each="showtime : ${showtimes}" th:value="${showtime}" th:text="${showtime}">Showtime</option>
+    </select>
+    <div class="button-container">
+      <button type="submit">Continue to Seat Selection</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

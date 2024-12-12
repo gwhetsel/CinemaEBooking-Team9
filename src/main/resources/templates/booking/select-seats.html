@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Select Seats for ' + ${movie.title}">Select Seats</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .movie-info {
+      margin-bottom: 30px;
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .movie-info h1 {
+      margin: 0;
+    }
+
+    .seat-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 50px); /* 10 seats per row */
+      grid-gap: 10px;
+      margin: 20px 0;
+    }
+
+    .seat {
+      width: 50px;
+      height: 50px;
+      background-color: lightgray;
+      border-radius: 10px;
+      text-align: center;
+      line-height: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    .seat.selected {
+      background-color: green;
+      color: white;
+    }
+
+    .seat.booked {
+      background-color: red;
+      color: white;
+      cursor: not-allowed;
+    }
+
+    .selected-seats {
+      margin-top: 20px;
+    }
+
+    .total-tickets {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .confirm-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .confirm-btn:hover {
+      background-color: #45a049;
+    }
+
+    .seat-type-select {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Movie Information -->
+  <div class="movie-info">
+    <h1 th:text="${movie.title}">Movie Title</h1>
+    <p th:text="${movie.synopsis}">Movie Synopsis</p>
+    <p><strong>Showtime:</strong> <span th:text="${showtime}">Showtime</span></p>
+  </div>
+
+  <h2>Select Your Seats</h2>
+
+  <div class="seat-grid" id="seatGrid"></div>
+
+  <div class="selected-seats">
+    <h3>Selected Seats</h3>
+    <ul id="selectedSeatsList"></ul>
+  </div>
+
+  <div class="total-tickets">
+    Total Tickets: <span id="totalTickets">0</span>
+  </div>
+
+<!-- Confirm Button -->
+<button class="confirm-btn" id="confirmButton" disabled th:attr="onclick=|redirectToOrderSummary()|">Confirm</button>
+
+  <script th:inline="javascript">
+    const movieTitle = /*[[${movie.title}]]*/ 'Default Movie Title';
+    const movieSynopsis = /*[[${movie.synopsis}]]*/ 'Default Movie Synopsis';
+    const showtime = /*[[${showtime}]]*/ 'Default Showtime';
+  </script>
+
+  <script>
+    const rows = ['A', 'B', 'C', 'D', 'E'];
+    const cols = 10;
+    let selectedSeats = [];
+
+    window.onload = async function () {
+      try {
+        const bookedSeats = await fetchBookedSeats();
+        createSeatGrid(bookedSeats);
+      } catch (error) {
+        console.error("Failed to initialize seat grid:", error);
+        createSeatGrid([]);
+      }
+    };
+
+    async function fetchBookedSeats() {
+      try {
+        const response = await fetch(`/booking/booked?movieTitle=${encodeURIComponent(movieTitle)}&showtime=${encodeURIComponent(showtime)}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch booked seats");
+        }
+        const bookedSeats = await response.json();
+        return bookedSeats;
+      } catch (error) {
+        console.error("Error fetching booked seats:", error);
+        return [];
+      }
+    }
+
+    function createSeatGrid(bookedSeats = []) {
+    const seatGrid = document.getElementById('seatGrid');
+    seatGrid.innerHTML = ''; // clear
+
+    rows.forEach((row) => {
+      for (let colIndex = 1; colIndex <= cols; colIndex++) {
+        const seatCode = row + colIndex;
+        const seatElement = document.createElement('div');
+        seatElement.classList.add('seat');
+        seatElement.setAttribute('data-seat-code', seatCode);
+        seatElement.textContent = seatCode;
+
+        if (bookedSeats.includes(seatCode)) {
+          seatElement.classList.add('booked');
+          seatElement.onclick = null; // disable
+        } else {
+          seatElement.onclick = function () {
+            toggleSeat(seatElement, seatCode);
+          };
+        }
+
+        seatGrid.appendChild(seatElement);
+      }
+    });
+  }
+
+    function toggleSeat(seatElement, seatCode) {
+      if (seatElement.classList.contains('selected')) {
+        seatElement.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(seat => seat.code !== seatCode);
+      } else {
+        seatElement.classList.add('selected');
+        selectedSeats.push({ code: seatCode, type: 'Adult' });
+      }
+      updateSelectedSeats();
+    }
+
+    function updateSelectedSeats() {
+      const selectedSeatsList = document.getElementById('selectedSeatsList');
+      selectedSeatsList.innerHTML = ''; // clear
+
+      selectedSeats.forEach((seat, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${seat.code} - `;
+
+        const seatTypeSelect = document.createElement('select');
+        seatTypeSelect.classList.add('seat-type-select');
+        seatTypeSelect.innerHTML = `
+          <option value="Adult" ${seat.type === 'Adult' ? 'selected' : ''}>Adult</option>
+          <option value="Child" ${seat.type === 'Child' ? 'selected' : ''}>Child</option>
+          <option value="Senior" ${seat.type === 'Senior' ? 'selected' : ''}>Senior</option>
+        `;
+
+        seatTypeSelect.onchange = function () {
+          selectedSeats[index].type = seatTypeSelect.value;
+        };
+
+        li.appendChild(seatTypeSelect);
+        selectedSeatsList.appendChild(li);
+      });
+
+      document.getElementById('totalTickets').textContent = selectedSeats.length;
+
+      // Update the Confirm button state
+      updateConfirmButtonState();
+    }
+
+    function updateConfirmButtonState() {
+      const confirmButton = document.getElementById('confirmButton');
+      if (selectedSeats.length > 0) {
+        confirmButton.disabled = false; // seats selected
+      } else {
+        confirmButton.disabled = true; // no seats selected
+      }
+    }
+
+    function redirectToOrderSummary() {
+      const seatInfo = selectedSeats.map(seat => `${seat.code}-${seat.type}`).join(',');
+      window.location.href = `/booking/order-summary?title=${encodeURIComponent(movieTitle)}&synopsis=${encodeURIComponent(movieSynopsis)}&showtime=${encodeURIComponent(showtime)}&seats=${encodeURIComponent(seatInfo)}`;
+    }
+  </script>
+</body>
+</html>

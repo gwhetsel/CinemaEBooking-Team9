@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>Movie List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .movie-poster {
+      width: 150px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .details-btn, .book-btn, .edit-btn, .delete-btn {
+      transition: background-color 0.3s ease;
+    }
+
+    .details-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .details-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .book-btn {
+      background-color: #28a745;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .book-btn:hover {
+      background-color: #218838;
+    }
+
+    .edit-btn {
+      background-color: #ffc107;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: #e0a800;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    .no-movies-message {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .movie-category {
+      margin-bottom: 40px;
+    }
+
+    .movie-category h3 {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Movie Listings</h2>
+
+  <!-- Button container with Home and Add Movie buttons -->
+  <div class="btn-container">
+    <a href="/home" class="btn btn-secondary">Back to Home</a>
+
+    <!-- Conditionally show the "Add Movie" button if adminPortal is true -->
+    <div th:if="${adminPortal}">
+      <a href="/movies/add" class="btn btn-success">Add Movie</a>
+    </div>
+  </div>
+
+  <!-- Check if there are no movies -->
+  <div th:if="${#lists.isEmpty(currentlyRunning) and #lists.isEmpty(comingSoon)}" class="no-movies-message">
+    <p>No movies found. Please check back later.</p>
+  </div>
+
+  <!-- Display Currently Playing Movies -->
+  <div th:if="${!#lists.isEmpty(currentlyRunning)}" class="movie-category">
+    <h3>Currently Playing</h3>
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th>Poster</th>
+        <th>Title</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="movie : ${currentlyRunning}">
+        <td>
+          <img th:src="${movie.posterUrl}" alt="Movie Poster" class="movie-poster">
+        </td>
+        <td th:text="${movie.title}">Movie Title</td>
+        <td>
+          <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn details-btn btn-sm">Details</a>
+          <a th:href="@{/booking/{id}/showtimes(id=${movie.id})}" class="btn book-btn btn-sm">Book Now</a>
+
+          <!-- Show Edit and Delete buttons if adminPortal is true -->
+          <div th:if="${adminPortal}">
+            <a th:href="@{/movies/edit/{id}(id=${movie.id})}" class="btn edit-btn btn-sm">Edit</a>
+
+            <!-- Delete Button with confirmation -->
+            <form th:action="@{/movies/delete/{id}(id=${movie.id})}" method="post" style="display:inline;">
+              <button type="submit" class="btn delete-btn btn-sm"
+                      onclick="return confirm('Are you sure you want to delete this movie?');">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Display Coming Soon Movies -->
+  <div th:if="${!#lists.isEmpty(comingSoon)}" class="movie-category">
+    <h3>Coming Soon</h3>
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th>Poster</th>
+        <th>Title</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="movie : ${comingSoon}">
+        <td>
+          <img th:src="${movie.posterUrl}" alt="Movie Poster" class="movie-poster">
+        </td>
+        <td th:text="${movie.title}">Movie Title</td>
+        <td>
+          <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn details-btn btn-sm">Details</a>
+          <button class="btn btn-secondary btn-sm" disabled>Coming Soon</button>
+
+          <!-- Show Edit and Delete buttons if adminPortal is true -->
+          <div th:if="${adminPortal}">
+            <a th:href="@{/movies/edit/{id}(id=${movie.id})}" class="btn edit-btn btn-sm">Edit</a>
+
+            <!-- Delete Button with confirmation -->
+            <form th:action="@{/movies/delete/{id}(id=${movie.id})}" method="post" style="display:inline;">
+              <button type="submit" class="btn delete-btn btn-sm"
+                      onclick="return confirm('Are you sure you want to delete this movie?');">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

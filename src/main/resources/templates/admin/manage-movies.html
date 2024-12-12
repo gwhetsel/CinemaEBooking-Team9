@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>Manage Movies</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .movie-poster {
+      width: 150px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .table th, .table td {
+      padding: 10px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .table th {
+      background-color: #f8f9fa;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .details-btn, .book-btn, .edit-btn, .delete-btn {
+      padding: 5px 10px;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    .details-btn {
+      background-color: #007bff;
+    }
+
+    .details-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .book-btn {
+      background-color: #28a745;
+      margin-left: 10px;
+    }
+
+    .book-btn:hover {
+      background-color: #218838;
+    }
+
+    .edit-btn {
+      background-color: #ffc107;
+      margin-left: 10px;
+    }
+
+    .edit-btn:hover {
+      background-color: #e0a800;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      margin-left: 10px;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    .no-movies-message {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .movie-category {
+      margin-bottom: 40px;
+    }
+
+    .movie-category h3 {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      padding: 10px;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      padding: 10px;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    .btn-disabled {
+      padding: 5px 10px;
+      background-color: #6c757d;
+      color: white;
+      border-radius: 4px;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2 class="mb-4 text-center">Manage Movies</h2>
+
+
+  <div class="btn-container">
+    <a href="/home" class="btn-secondary">Back to Home</a>
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+      <a href="/movies/add" class="btn-success">Add Movie</a>
+    </div>
+  </div>
+
+  <!-- display message if no movies -->
+  <div th:if="${#lists.isEmpty(current) and #lists.isEmpty(soon)}" class="no-movies-message">
+    <p>No movies found. Please check back later.</p>
+  </div>
+
+  <!-- display currently playing movies -->
+  <div th:if="${!#lists.isEmpty(current)}" class="movie-category">
+    <h3>Now Playing</h3>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Poster</th>
+        <th>Title</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="movie : ${current}">
+        <td>
+          <img th:src="${movie.posterUrl}" alt="Movie Poster" class="movie-poster">
+        </td>
+        <td th:text="${movie.title}">Movie Title</td>
+        <td>
+          <a th:href="@{/movies/{id}(id=${movie.id})}" class="details-btn">Details</a>
+          <a th:href="@{/booking/{id}/showtimes(id=${movie.id})}" class="book-btn">Book Now</a>
+          <a href="#" class="edit-btn">Edit</a>
+          <a href="#" class="delete-btn">Delete</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- display coming soon movies -->
+  <div th:if="${!#lists.isEmpty(soon)}" class="movie-category">
+    <h3>Coming Soon</h3>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Poster</th>
+        <th>Title</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="movie : ${soon}">
+        <td>
+          <img th:src="${movie.posterUrl}" alt="Movie Poster" class="movie-poster">
+        </td>
+        <td th:text="${movie.title}">Movie Title</td>
+        <td>
+          <a th:href="@{/movies/{id}(id=${movie.id})}" class="details-btn">Details</a>
+          <span class="btn-disabled">Coming Soon</span>
+          <a href="#" class="edit-btn">Edit</a>
+          <a href="#" class="delete-btn">Delete</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

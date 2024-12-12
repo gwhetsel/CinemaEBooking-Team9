@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Order History</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script>
+    function confirmRefund(bookingId, userId) {
+      if (confirm("Are you sure you want to refund this order?")) {
+        fetch(`/booking/${bookingId}/${userId}`, {
+          method: 'DELETE',
+        })
+        .then(response => {
+          if (response.ok) {
+            alert("Order refunded successfully.");
+            location.reload(); // reload page
+          } else {
+            alert("Failed to refund the order. Please try again.");
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="container">
+  <h2 class="mt-5">Order History</h2>
+
+  <!-- No Bookings -->
+  <div th:if="${bookings.size() == 0}" class="alert alert-info mt-3">
+    <p>No Orders found.</p>
+  </div>
+
+  <!-- Booking Table -->
+  <table th:if="${bookings.size() > 0}" class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Movie</th>
+        <th>Showtime</th>
+        <th>Seats</th>
+        <th>Total Cost</th>
+        <th>Payment Method</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr th:each="booking, iterStat : ${bookings}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${booking.movieTitle}"></td>
+            <td th:text="${booking.showtime}"></td>
+            <td th:text="${booking.seats}"></td>
+            <td th:text="${booking.totalCost}"></td>
+            <td th:text="${booking.paymentMethod}"></td>
+            <td th:text="${#temporals.format(booking.bookingDate, 'dd MMM yyyy HH:mm')}"></td>
+            <td>
+              <button class="btn btn-danger btn-sm"
+                th:onclick="'confirmRefund(' + ${booking.id} + ',' + ${booking.user.id} + ')'"
+                >Refund</button>          
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <!-- Back to Home Button -->
+  <div class="mt-4">
+    <a href="/home" class="btn btn-primary">Back to Home</a>
+  </div>
+</div>
+</body>
+</html>

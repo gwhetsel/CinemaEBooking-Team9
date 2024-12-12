@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Manage Sales</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h2 class="mt-5">Manage Sales</h2>
+
+  <!-- Total Sales -->
+  <div class="alert alert-success mt-3">
+    <p>
+      Total Sales: 
+      <strong th:text="${totalSales}"></strong>
+    </p>
+  </div>
+
+  <!-- No Bookings -->
+  <div th:if="${bookings.isEmpty()}" class="alert alert-info mt-3">
+    <p>No bookings found.</p>
+  </div>
+
+  <!-- Booking Table -->
+  <table th:if="${!bookings.isEmpty()}" class="table table-striped mt-3">
+    <thead class="thead-dark">
+      <tr>
+        <th>#</th>
+        <th>Booking ID</th>
+        <th>Movie</th>
+        <th>Showtime</th>
+        <th>Seats</th>
+        <th>Total Cost</th>
+        <th>Date</th>
+        <th>User ID</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr th:each="booking, iterStat : ${bookings}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${booking.id}"></td>
+            <td th:text="${booking.movieTitle}"></td>
+            <td th:text="${booking.showtime}"></td>
+            <td th:text="${booking.seats}"></td>
+            <td th:text="${booking.totalCost}"></td>
+            <td th:text="${#temporals.format(booking.bookingDate, 'dd MMM yyyy HH:mm')}"></td>
+            <td th:text="${booking.userId}"></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <!-- Back to Admin Dashboard Button -->
+  <div class="mt-4">
+    <a href="/admin" class="btn btn-primary">Back to Dashboard</a>
+  </div>
+</div>
+</body>
+</html>

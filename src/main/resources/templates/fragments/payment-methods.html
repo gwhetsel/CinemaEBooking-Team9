@@ -1,0 +1,18 @@
+<div th:fragment="payment-methods-section">
+    <h4>Saved Payment Methods</h4>
+    <div id="paymentMethodsContainer">
+        <div th:each="paymentMethod : ${user.paymentMethods}" class="payment-method" data-id="${paymentMethod.id}">
+            <div th:if="${paymentMethod.cardType != null and paymentMethod.maskedCardNumber != null}">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <p class="mb-0">
+                        <strong>Card Type:</strong> <span th:text="${paymentMethod.cardType}"></span>
+                        <br />
+                        <strong>Card Number:</strong> <span th:text="${paymentMethod.maskedCardNumber}"></span>
+                    </p>
+                    <button type="button" class="btn btn-danger btn-sm ms-3" th:data-id="${paymentMethod.id}" onclick="deletePaymentMethod(this)">Delete</button>
+                </div>
+            </div>
+        </div>
+        <p th:if="${user.paymentMethods.size() == 0}">No payment methods saved.</p>
+    </div>
+</div>

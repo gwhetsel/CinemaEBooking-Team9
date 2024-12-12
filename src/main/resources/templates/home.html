@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema Booking System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        .dropdown .dropdown-toggle {
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+
+        .dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 5px;
+            padding: 10px 0;
+        }
+
+        .dropdown .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content form {
+            padding: 10px 15px;
+        }
+
+        .movie-container {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .movie-category {
+            margin-bottom: 30px;
+        }
+
+        .movie-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .movie {
+            width: 200px;
+            background-color: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .movie h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .movie iframe {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+
+        .movie button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .movie button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .filter-dropdown {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .filter-container:hover .filter-dropdown {
+            display: block;
+        }
+
+        .filter-dropdown label {
+            margin-right: 10px;
+        }
+
+        .filter-dropdown select {
+            padding: 10px;
+            margin-right: 10px;
+            width: 150px;
+        }
+
+        .filter-dropdown button {
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .search-bar {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .search-bar input {
+            width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .search-bar button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<div class="navbar">
+    <div class="logo">
+        <p>Cinema Booking System</p>
+    </div>
+    <div class="nav-links">
+        <a href="/movies">Movies</a>
+
+        <!-- Show Login button if user is not authenticated -->
+        <div sec:authorize="isAnonymous()">
+            <a href="/login">Login</a>
+        </div>
+
+        <!-- Show My Account with dropdown if user is authenticated -->
+        <div sec:authorize="isAuthenticated()" class="dropdown">
+            <a href="#" class="dropdown-toggle">My Account</a>
+            <div class="dropdown-content">
+                <a href="/edit-profile">Edit Profile</a>
+                <a href="/history">Order History</a>
+                <a href="#" onclick="document.getElementById('logoutForm').submit();">Logout</a>
+                <a sec:authorize="hasRole('ROLE_ADMIN')" href="/admin">Admin View</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Logout Form -->
+<form id="logoutForm" th:action="@{/logout}" method="post" style="display: none;">
+</form>
+
+<!-- Search bar -->
+<div class="search-bar">
+    <form th:action="@{/movies/search}" method="get">
+        <input type="text" name="title" placeholder="Search for movies..." />
+        <button type="submit" class="button">Search</button>
+    </form>
+</div>
+
+<!-- Movie Categories -->
+<div class="movie-container">
+    <!-- Currently Running Movies -->
+    <div class="movie-category">
+        <h2>Currently Running</h2>
+        <div class="filter-container">
+            <button class="filter-button">Filter Movies</button>
+            <div class="filter-dropdown">
+                <label for="currentlyRunningFilter">Genres:</label>
+                <select id="currentlyRunningFilter" multiple>
+                    <option value="Action">Action</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Family">Family</option>
+                    <option value="Animated">Animated</option>
+                </select>
+                <button class= "btn btn-success" onclick="filterMovies('currentlyRunning')">Apply Filter</button>
+                <button class="btn btn-danger" onclick="resetFilter('currentlyRunning')">Reset Filter</button>
+            </div>
+        </div>
+        <div class="movie-grid" id="currentlyRunningMovies">
+        </div>
+    </div>
+
+    <!-- Coming Soon Movies -->
+    <div class="movie-category">
+        <h2>Coming Soon</h2>
+        <div class="filter-container">
+            <button class="filter-button">Filter Movies</button>
+            <div class="filter-dropdown">
+                <label for="comingSoonFilter">Genres:</label>
+                <select id="comingSoonFilter" multiple>
+                    <option value="Action">Action</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Family">Family</option>
+                    <option value="Animated">Animated</option>
+                </select>
+                <button class="btn btn-success" onclick="filterMovies('comingSoon')">Apply Filter</button>
+                <button class="btn btn-danger" onclick="resetFilter('comingSoon')">Reset Filter</button>
+            </div>
+        </div>
+        <div class="movie-grid" id="comingSoonMovies">
+        </div>
+    </div>
+</div>
+
+<script>
+    function fetchMovies(category) {
+        const queryString = `/movies/filter?category=${category}`; // fetch all movies for category
+
+        fetch(queryString)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const contentType = response.headers.get('Content-Type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Expected JSON but received an invalid content type');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const moviesGrid = document.getElementById(`${category}Movies`);
+                moviesGrid.innerHTML = ''; // clear grid
+
+                if (data.length === 0) {
+                    moviesGrid.innerHTML = '<p>No movies are available.</p>';
+                } else {
+                    data.forEach(movie => {
+                        const movieDiv = document.createElement('div');
+                        movieDiv.className = 'movie';
+
+                        // case-insensitive
+                        const status = movie.status?.trim().toLowerCase();
+
+                        movieDiv.innerHTML = `
+                            <h3>${movie.title}</h3>
+                            <iframe src="https://www.youtube.com/embed/${movie.trailerUrl}" allowfullscreen></iframe>
+                            ${
+                                status === 'coming_soon'
+                                    ? `<button disabled style="cursor: not-allowed; background-color: #ccc;">Coming Soon</button>`
+                                    : `<button onclick="location.href='/booking/${movie.id}/showtimes'">Book Now</button>`
+                            }
+                        `;
+
+                        moviesGrid.appendChild(movieDiv);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching movies:', error);
+                const moviesGrid = document.getElementById(`${category}Movies`);
+                moviesGrid.innerHTML = '<p>Error loading movies. Please try again later.</p>';
+            });
+    }
+
+    // load all movies at page load
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchMovies('currentlyRunning');
+        fetchMovies('comingSoon');
+    });
+
+    function filterMovies(category) {
+    const filterSelect = document.getElementById(`${category}Filter`);
+    const selectedGenres = Array.from(filterSelect.selectedOptions).map(option => option.value);
+
+    const queryString = selectedGenres.length
+        ? `/movies/filter?category=${category}&genres=${selectedGenres.join(',')}`
+        : `/movies/filter?category=${category}`;
+
+    fetch(queryString)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const moviesGrid = document.getElementById(`${category}Movies`);
+            moviesGrid.innerHTML = ''; // clear
+
+            if (data.length === 0) {
+                moviesGrid.innerHTML = '<p>No movies are available for the selected genres.</p>';
+            } else {
+                data.forEach(movie => {
+                    const movieDiv = document.createElement('div');
+                    movieDiv.className = 'movie';
+
+                    // button render
+                    movieDiv.innerHTML = `
+                        <h3>${movie.title}</h3>
+                        <iframe src="https://www.youtube.com/embed/${movie.trailerUrl}" allowfullscreen></iframe>
+                        ${
+                            movie.status === 'coming_soon'
+                                ? `<button disabled style="cursor: not-allowed; background-color: #ccc;">Coming Soon</button>`
+                                : `<button onclick="location.href='/booking/${movie.id}/showtimes'">Book Now</button>`
+                        }
+                    `;
+                    moviesGrid.appendChild(movieDiv);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching movies:', error);
+            const moviesGrid = document.getElementById(`${category}Movies`);
+            moviesGrid.innerHTML = '<p>Error loading movies. Please try again later.</p>';
+        });
+}
+
+// reset filters, display all movies
+function resetFilter(category) {
+    const filterSelect = document.getElementById(`${category}Filter`);
+    Array.from(filterSelect.options).forEach(option => option.selected = false);
+    filterMovies(category); // reload all movies
+}
+</script>
+</body>
+</html>
